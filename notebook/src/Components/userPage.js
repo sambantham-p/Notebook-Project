@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 
-import App from '../App';
 import { AppContext } from '../appContext';
 import NotebookImg from '../assests/notebookimg.png';
 import { NotebookPenIcon } from 'lucide-react';
