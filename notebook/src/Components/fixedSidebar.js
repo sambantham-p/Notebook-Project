@@ -1,7 +1,7 @@
 import { History, Notebook, Search, User2Icon } from 'lucide-react';
-import { useContext, useState } from 'react';
 
 import { AppContext } from '../appContext';
+import { useContext } from 'react';
 
 export const FixedSidebar = ({ toggleCollapse }) => {
   const { active, setActive } = useContext(AppContext);
