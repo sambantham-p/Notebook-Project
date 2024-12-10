@@ -1,8 +1,8 @@
 import './App.css';
 
-import { AppContext, AppProvider } from './appContext';
 import { useContext, useState } from 'react';
 
+import { AppContext } from './appContext';
 import { FixedSidebar } from './Components/fixedSidebar';
 import MainContent from './Components/mainContent';
 import SearchNote from './Components/searchNote';
