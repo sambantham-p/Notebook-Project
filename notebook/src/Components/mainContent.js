@@ -8,10 +8,8 @@ const MainContent = () => {
     sections,
     activeSectionId,
     activePageId,
-    sharedTitles,
     setSharedTitles,
     allSection,
-    isLogin,
   } = useContext(AppContext);
 
   // Get the active section and page
@@ -38,11 +36,7 @@ const MainContent = () => {
     setContent(newContent);
     setTitle(newTitle);
   }, [newContent, newTitle]);
-  useEffect(() => {
-    return () => {
-      debouncedSaveContent()?.cancel?.();
-    };
-  }, []);
+
   function debounce(func, delay) {
     let timer;
     return function (...args) {
@@ -67,7 +61,11 @@ const MainContent = () => {
 
     return (content) => debouncedFn(content);
   }, [activePageId, activeSectionId, title]);
-
+  useEffect(() => {
+    return () => {
+      debouncedSaveContent()?.cancel?.();
+    };
+  }, [debouncedSaveContent]);
   // Usage
   const saveContent = (content) => {
     debouncedSaveContent()(content);
