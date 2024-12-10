@@ -43,13 +43,11 @@ export const AppProvider = ({ children }) => {
 
     if (token) {
       try {
-        // Decode the token to check its expiration
         const decodedToken = jwtDecode(token);
         const currentTime = Date.now() / 1000;
         if (decodedToken.exp > currentTime) {
           setIsLogin(true);
         } else {
-          // Token has expired, clear it
           localStorage.removeItem('token');
           setIsLogin(false);
         }
@@ -104,11 +102,9 @@ export const AppProvider = ({ children }) => {
         pages: [],
       };
 
-      // Add the new section to the state
       setSections([...allSections, newSection]);
 
       try {
-        // Call the API to add the new section
         const sectionResponse = await axiosInstance.post('/add-section', {
           sectionId: newSection.sectionId,
           title: newSection.title,
