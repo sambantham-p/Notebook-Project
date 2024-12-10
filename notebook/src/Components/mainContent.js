@@ -23,11 +23,9 @@ const MainContent = () => {
       ? allSection[sectionIndex].pages
       : [];
 
-  const newPageNumber = sectionPages.length + 1;
   const [content, setContent] = useState('');
   const [title, setTitle] = useState('');
 
-  const allActiveSection = allSection[sectionIndex];
   const allActivePage = sectionPages.find((page) => page._id === activePageId);
 
   const newTitle = allActivePage?.title || '';
@@ -66,7 +64,7 @@ const MainContent = () => {
       debouncedSaveContent()?.cancel?.();
     };
   }, [debouncedSaveContent]);
-  // Usage
+
   const saveContent = (content) => {
     debouncedSaveContent()(content);
   };
@@ -77,8 +75,6 @@ const MainContent = () => {
     saveContent(updatedContent);
   };
 
-  // Log for debugging
-
   const activeSection = sections.find(
     (section) => section.id === activeSectionId
   );
@@ -87,7 +83,7 @@ const MainContent = () => {
   );
   const handleTitleChange = (e) => {
     const updatedTitle = e.target.value;
-    setTitle(updatedTitle); // Update local state
+    setTitle(updatedTitle);
     setSharedTitles((prevTitles) => {
       const updatedTitles = prevTitles.map((title) => {
         if (
