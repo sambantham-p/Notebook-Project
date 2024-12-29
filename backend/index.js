@@ -259,6 +259,49 @@ app.get('/get-sections', authenticateToken, async (req, res) => {
     res.status(500).json({ error: true, message: error.message });
   }
 });
+//delete sections with notes
+app.delete(
+  '/delete-section/:sectionId',
+  authenticateToken,
+  async (req, res) => {
+    const sectionId = req.params.sectionId;
+    const { user } = req.user;
+
+    try {
+      // Find the section
+      const section = await Section.findOne({
+        _id: sectionId,
+        userId: user._id,
+      });
+      console.log(
+        'user id:',
+        user._id,
+        'section id:',
+        sectionId,
+        'section name:',
+        section
+      );
+      if (!section) {
+        return res
+          .status(404)
+          .json({ error: true, message: 'Section not found.' });
+      }
+
+      // Delete all notes associated with the section
+      await Note.deleteMany({ sectionId: sectionId });
+
+      // Delete the section
+      await Section.deleteOne({ _id: sectionId });
+
+      return res.json({
+        error: false,
+        message: 'Section and associated notes deleted successfully.',
+      });
+    } catch (error) {
+      return res.status(500).json({ error: true, message: error.message });
+    }
+  }
+);
 // Add Page
 app.post('/add-page', authenticateToken, async (req, res) => {
   const { title, content, sectionId, pageId } = req.body;
