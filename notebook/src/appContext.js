@@ -3,6 +3,7 @@ import React, { createContext, useEffect, useState } from 'react';
 import ObjectId from 'bson-objectid';
 import axiosInstance from './utils/axiosinstance';
 import { jwtDecode } from 'jwt-decode';
+import page from './Components/addPage';
 
 export const AppContext = createContext();
 
@@ -19,23 +20,10 @@ export const AppProvider = ({ children }) => {
     return localStorage.getItem('username');
   });
   const [content, setContent] = useState('');
-  const [sections, setSections] = useState([
-    {
-      id: 1,
-      sectionId: ObjectId().toHexString(),
-      title: 'Default Section',
-      pages: [
-        {
-          id: 1,
-          pageId: ObjectId().toHexString(),
-          title: 'Page 1',
-          content: ' ',
-        },
-      ],
-    },
-  ]);
-  const [activeSectionId, setActiveSectionId] = useState(sections[0].sectionId);
-  const [activePageId, setActivePageId] = useState(sections[0].pages[0].pageId);
+  const [sections, setSections] = useState([{}]);
+
+  const [activeSectionId, setActiveSectionId] = useState('');
+  const [activePageId, setActivePageId] = useState('');
   const [active, setActive] = useState('notes');
 
   useEffect(() => {
@@ -68,18 +56,9 @@ export const AppProvider = ({ children }) => {
   }, [username]);
 
   const addSection = async (allSection) => {
-    const newSectionId = sections.length + 1;
-    const newSection = {
-      id: newSectionId,
-      sectionId: ObjectId().toHexString(),
-      title: `New Section ${newSectionId}`,
-      pages: [],
-    };
-
-    setSections([...sections, newSection]);
-
+    let sectionId = ObjectId().toHexString();
     try {
-      await addPage(allSection, newSection.sectionId);
+      await addPage(allSection, sectionId);
     } catch (error) {
       console.error('Error adding section:', error);
     }
@@ -109,6 +88,7 @@ export const AppProvider = ({ children }) => {
           sectionId: newSection.sectionId,
           title: newSection.title,
           userId: localStorage.getItem('userId'),
+          pages: [],
         });
         console.log('New Section API response:', sectionResponse);
 
@@ -120,10 +100,7 @@ export const AppProvider = ({ children }) => {
         return;
       }
     }
-
-    const sectionPages = allSections[sectionIndex].pages || [];
-    const newPageNumber = sectionPages.length + 1;
-    const newPageTitle = `Page ${newPageNumber}`;
+    let newPageTitle = 'Untitled Page';
     const newPageId = ObjectId().toHexString();
     const newPage = {
       id: newPageId,

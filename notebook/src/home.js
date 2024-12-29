@@ -1,6 +1,6 @@
 import './App.css';
 
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { AppContext } from './appContext';
 import { FixedSidebar } from './Components/fixedSidebar';
@@ -8,14 +8,19 @@ import MainContent from './Components/mainContent';
 import SearchNote from './Components/searchNote';
 import SecondSidebar from './Components/secondSidebar';
 import UserPage from './Components/userPage';
+import { useNavigate } from 'react-router-dom';
 
-function Home() {
+const Home = () => {
+  const { isLogin, username, setIsLogin } = useContext(AppContext);
   const active = useContext(AppContext);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
   };
-
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isLogin) navigate('/signin');
+  });
   return (
     <div className='flex'>
       <div className={'w-14 h-screen bg-slate-800'}>
@@ -47,6 +52,6 @@ function Home() {
       </div>
     </div>
   );
-}
+};
 
 export default Home;

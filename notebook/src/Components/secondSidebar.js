@@ -1,4 +1,10 @@
-import { Book, ChevronDown, ChevronUp, StickyNote } from 'lucide-react';
+import {
+  Book,
+  ChevronDown,
+  ChevronUp,
+  DeleteIcon,
+  StickyNote,
+} from 'lucide-react';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { AppContext } from '../appContext';
@@ -42,33 +48,6 @@ const SecondSidebar = () => {
     }
   };
 
-  const initialSectionPage = async () => {
-    try {
-      const existingSection = await axiosInstance.get('/get-sections', {
-        userId: localStorage.getItem('userId'),
-      });
-
-      if (existingSection.data.sections.length === 0) {
-        await axiosInstance.post('/add-section', {
-          sectionId: sections[0].sectionId,
-          title: sections[0].title,
-          userId: localStorage.getItem('userId'),
-        });
-        await axiosInstance.post('/add-page', {
-          pageId: sections[0].pages[0].pageId,
-          sectionId: sections[0].sectionId,
-          title: sections[0].pages[0].title,
-          content: sections[0].pages[0].content,
-          userId: localStorage.getItem('userId'),
-        });
-        setActivePageId(sections[0].pages[0].pageId);
-        setActiveSectionId(sections[0].sectionId);
-      }
-    } catch (error) {
-      console.error('Error initializing sections and pages:', error);
-    }
-  };
-  initialSectionPage();
   const finalTitle = async (sectionId, newTitle) => {
     try {
       const response = await axiosInstance.post('/add-section', {
@@ -114,25 +93,37 @@ const SecondSidebar = () => {
     }
   }, [sharedTitles]);
 
-  useEffect(() => {
-    console.log('editing sections id', editingSectionId);
-  }, [sharedTitles, editingSectionId]);
+  const handleDelete = async (sectionId) => {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this section and all its notes?'
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await axiosInstance.delete(`/delete-section/${sectionId}`);
+      // Remove the section locally or trigger a refresh
+      setAllSection((prevSections) =>
+        prevSections.filter((s) => s._id !== sectionId)
+      );
+      console.log('Section deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting section:', error);
+      alert('Failed to delete the section.');
+    }
+  };
 
   return (
     <div className='flex flex-col h-full w-full p-4 bg-gray-900'>
       {/* Section and Pages List */}
       <div className='flex-grow overflow-y-auto'>
         {allSection.map((section) => (
-          <div key={section._id} className='mb-4 flex flex-col'>
+          <div key={section._id} className='mb-4 flex justify-between flex-row'>
             <div
-              className={`flex items-center gap-3 cursor-pointer ${
+              className={`flex items-center gap-3  cursor-pointer ${
                 activeSectionId === section._id ? 'text-white' : 'text-gray-400'
               }`}
               onClick={() => {
                 setActiveSectionId(section._id);
-                setActivePageId(
-                  section.pages[0]?._id ? section.pages[0]._id : null
-                );
               }}
             >
               <StickyNote size={24} className='text-white' />
@@ -191,6 +182,12 @@ const SecondSidebar = () => {
                 ))}
               </div>
             )}
+            <DeleteIcon
+              size={30}
+              color='red'
+              className='pointer:none'
+              onClick={() => handleDelete(section._id)}
+            />
           </div>
         ))}
       </div>
