@@ -94,11 +94,6 @@ const SecondSidebar = () => {
   }, [sharedTitles]);
 
   const handleDelete = async (sectionId) => {
-    const confirmDelete = window.confirm(
-      'Are you sure you want to delete this section and all its notes?'
-    );
-    if (!confirmDelete) return;
-
     try {
       await axiosInstance.delete(`/delete-section/${sectionId}`);
       // Remove the section locally or trigger a refresh
